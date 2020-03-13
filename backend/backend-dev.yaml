@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform:
+- AWS::Serverless-2016-10-31
+Description: "HonorU Backend Stack - Development"
+
+Globals:
+  Function:
+    Runtime: nodejs12.x
+    MemorySize: 128
+    Timeout: 10
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+  BranchIdentifier:
+    Type: String
+    Default: develop
+
+Mappings:
+  RegionMap:
+    us-east-1:
+      Short: use1
+    us-west-1:
+      Short: usw1
+
+Resources:
+  CoreServiceStack:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      Parameters:
+        Environment: !Ref Environment
+        BranchIdentifier: !Ref BranchIdentifier
+      TemplateURL: ./core-service/cloudformation.yaml
+
+Outputs:
+  ApiUrl:
+    Description: "Widget Ratings Api"
+    Value: !GetAtt CoreServiceStack.Outputs.ApiUrl

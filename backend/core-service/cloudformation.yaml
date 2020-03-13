@@ -2,6 +2,15 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Serverless Express Application/API powered by API Gateway and Lambda
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+  BranchIdentifier:
+    Type: String
+    Default: develop
+
 Resources:
   ApiGatewayApi:
     Type: AWS::Serverless::Api
@@ -81,34 +90,12 @@ Resources:
 Outputs:
   LambdaFunctionConsoleUrl:
     Description: Console URL for the Lambda Function.
-    Value: !Join
-      - ''
-      - - https://
-        - !Ref AWS::Region
-        - ".console.aws.amazon.com/lambda/home?region="
-        - !Ref AWS::Region
-        - "#/functions/"
-        - !Ref CoreServiceFunction
+    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/lambda/home?region=${AWS::Region}#/functions/${CoreServiceFunction}
 
   ApiGatewayApiConsoleUrl:
     Description: Console URL for the API Gateway API's Stage.
-    Value: !Join
-      - ''
-      - - https://
-        - !Ref AWS::Region
-        - ".console.aws.amazon.com/apigateway/home?region="
-        - !Ref AWS::Region
-        - "#/apis/"
-        - !Ref ApiGatewayApi
-        - "/stages/prod"
+    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/apigateway/home?region=${AWS::Region}#/apis/${ApiGatewayApi}/stages/prod
 
   ApiUrl:
-    Description: Invoke URL for your API. Clicking this link will perform a GET request
-      on the root resource of your API.
-    Value: !Join
-      - ''
-      - - https://
-        - !Ref ApiGatewayApi
-        - ".execute-api."
-        - !Ref AWS::Region
-        - ".amazonaws.com/prod/"
+    Description: Invoke URL for your API.
+    Value: !Sub https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/prod/

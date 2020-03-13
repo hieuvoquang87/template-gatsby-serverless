@@ -1,0 +1,20 @@
+{
+  "name": "backend-stack",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "config": {
+    "s3BucketName": "artifacts-432267630742",
+    "region": "us-east-1",
+    "cloudFormationStackName": "BackendStack",
+    "functionName": "CoreServiceFunction",
+    "accountId": "432267630742"
+  },
+  "scripts": {
+    "package": "aws cloudformation package --template ./backend-dev.yaml --s3-bucket $npm_package_config_s3BucketName --output-template packaged-backend-dev-stack.yaml --region $npm_package_config_region",
+    "deploy": "aws cloudformation deploy --template-file packaged-backend-dev-stack.yaml --stack-name $npm_package_config_cloudFormationStackName --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND --region $npm_package_config_region",
+    "package-deploy": "npm run package && npm run deploy"
+  },
+  "author": "",
+  "license": "ISC"
+}
