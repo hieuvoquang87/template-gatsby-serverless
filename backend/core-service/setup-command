@@ -1,0 +1,1 @@
+npm run config -- --account-id="432267630742" --bucket-name="artifacts-432267630742" --region="us-east-1" --function-name="ServerlessDynamoDB"
