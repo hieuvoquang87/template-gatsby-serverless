@@ -1,6 +1,6 @@
-import { IRole, PolicyStatement } from '@aws-cdk/aws-iam';
+import { IRole } from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/core';
-import { Project, ProjectProps, IProject, CfnProjectProps, CfnProject, SourceProps } from '@aws-cdk/aws-codebuild';
+import { Project,  IProject, CfnProjectProps, CfnProject } from '@aws-cdk/aws-codebuild';
 
 export enum CodeBuildSourceType {
   BITBUCKET = 'BITBUCKET',
@@ -69,32 +69,39 @@ export class CodeBuildBuilder {
 
   constructor() {}
 
-  setProjectProps(props: CodeBuildProjectProps) {
+  setProjectProps(props: CodeBuildProjectProps): CodeBuildBuilder {
     this.propjectProps = props;
+    return this;
   }
 
-  setProjectName(name: string) {
+  setProjectName(name: string): CodeBuildBuilder {
     this.projectName = name;
+    return this;
   }
 
-  setServiceRole(role: IRole) {
+  setServiceRole(role: IRole): CodeBuildBuilder {
     this.serviceRole = role;
+    return this;
   }
 
-  setSource(source: SourceProperty) {
+  setSource(source: SourceProperty): CodeBuildBuilder {
     this.source = source;
+    return this;
   }
 
-  setArtifacts(artifacts: ArtifactsProperty) {
+  setArtifacts(artifacts: ArtifactsProperty): CodeBuildBuilder {
     this.artifacts = artifacts
+    return this;
   }
 
-  setEnvironment(environment: EnvironmentProperty) {
+  setEnvironment(environment: EnvironmentProperty): CodeBuildBuilder {
     this.environment = environment;
+    return this;
   }
 
-  setTriggers(triggers: CfnProject.ProjectTriggersProperty) {
+  setTriggers(triggers: CfnProject.ProjectTriggersProperty): CodeBuildBuilder {
     this.triggers = triggers;
+    return this;
   }
 
   build(scope: Construct, id: string): IProject {

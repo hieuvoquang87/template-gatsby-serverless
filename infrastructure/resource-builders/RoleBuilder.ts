@@ -2,7 +2,7 @@ import { Construct, IResolvable, Stack, Fn } from '@aws-cdk/core';
 import { CfnRoleProps, IRole, Role } from '@aws-cdk/aws-iam';
 import { CustomResource, CustomResourceProvider } from '@aws-cdk/aws-cloudformation';
 import { Function } from '@aws-cdk/aws-lambda';
-import { Environment } from '@aws-cdk/cx-api';
+// import { Environment } from '@aws-cdk/cx-api';
 
 interface PolicyProperty extends IResolvable {
   PolicyName: string

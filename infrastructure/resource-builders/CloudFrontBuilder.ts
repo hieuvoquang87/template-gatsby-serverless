@@ -1,6 +1,6 @@
 import { Construct, Duration } from '@aws-cdk/core';
 import { IBucket } from '@aws-cdk/aws-s3';
-import { CloudFrontWebDistributionProps, CloudFrontWebDistribution, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol, CloudFrontAllowedMethods, OriginProtocolPolicy, CloudFrontAllowedCachedMethods, AliasConfiguration, SourceConfiguration, LoggingConfiguration, OriginAccessIdentity } from '@aws-cdk/aws-cloudfront';
+import { CloudFrontWebDistributionProps, CloudFrontWebDistribution, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol, CloudFrontAllowedMethods, OriginProtocolPolicy, CloudFrontAllowedCachedMethods, AliasConfiguration, SourceConfiguration, LoggingConfiguration, OriginAccessIdentity, Behavior } from '@aws-cdk/aws-cloudfront';
 
 export type HostedZoneProps = {
   domainName: string // Ex: awskbbfdpq.kbb.com
@@ -10,11 +10,14 @@ export type S3OrginSourceProps = {
   s3BucketSource: IBucket,
   originAccessIdentity: OriginAccessIdentity, // cloudfrontOriginAccessIdentity.ref
   originPath: string // S3 Root Path. Ex: '/' or '/public'
+  disableCache?: boolean
 }
 
 export type CustomOriginSourceProps = {
   domainName: string
   pathPattern: string // Ex: 'api/*'
+  allowedMethods?: CloudFrontAllowedMethods
+  cachedMethods?: CloudFrontAllowedCachedMethods
 }
 
 export type CloudFrontAliasConfigurationProps = {
@@ -56,37 +59,44 @@ export class CloudFrontBuilder {
     return this;
   }
 
-  addS3OriginSource({ s3BucketSource, originAccessIdentity, originPath }: S3OrginSourceProps): CloudFrontBuilder {
+  addS3OriginSource({ s3BucketSource, originAccessIdentity, originPath, disableCache = false }: S3OrginSourceProps): CloudFrontBuilder {
+    const s3behavior: Behavior = {
+      isDefaultBehavior: true,
+      allowedMethods: CloudFrontAllowedMethods.GET_HEAD,
+      compress: true,
+      defaultTtl: disableCache ? Duration.millis(0) : Duration.days(1),
+      maxTtl: disableCache ? Duration.millis(0) : Duration.days(365),
+      forwardedValues: {
+        queryString: true
+      }
+    }
     const s3OriginSource: SourceConfiguration = {
       s3OriginSource: {
         s3BucketSource,
         originAccessIdentity
       },
-      behaviors: [{
-        isDefaultBehavior: true,
-        allowedMethods: CloudFrontAllowedMethods.GET_HEAD,
-        compress: true,
-        defaultTtl: Duration.days(1),
-        forwardedValues: {
-          queryString: true
-        }
-      }],
+      behaviors: [s3behavior],
       originPath
     }
     this.originSourceConfigs.push(s3OriginSource)
     return this;
   }
 
-  addCustomOriginSource({ domainName, pathPattern }: CustomOriginSourceProps): CloudFrontBuilder {
+  addCustomOriginSource({
+    domainName,
+    pathPattern,
+    allowedMethods = CloudFrontAllowedMethods.ALL,
+    cachedMethods = CloudFrontAllowedCachedMethods.GET_HEAD
+  }: CustomOriginSourceProps): CloudFrontBuilder {
     const customOriginSource: SourceConfiguration = {
       customOriginSource: {
         domainName: domainName,
         originProtocolPolicy: OriginProtocolPolicy.HTTPS_ONLY
       },
       behaviors: [{
-        allowedMethods: CloudFrontAllowedMethods.ALL,
+        allowedMethods,
         compress: true,
-        cachedMethods: CloudFrontAllowedCachedMethods.GET_HEAD,
+        cachedMethods,
         forwardedValues: {
           queryString: true,
         },

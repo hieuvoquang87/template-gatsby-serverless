@@ -15,15 +15,15 @@ export class Route53Builder {
   constructor() {}
 
   private domainName: string
-  private recordName: string
+  // private recordName: string
 
   private cloudfrontTarget: CloudFrontTarget
 
   setDomainName(domainName: string): Route53Builder {
     this.domainName = domainName
 
-    const nameMatchedArray = domainName.match(/^\w+/);
-    this.recordName = nameMatchedArray ? nameMatchedArray[0] : '';
+    // const nameMatchedArray = domainName.match(/^\w+/);
+    // this.recordName = nameMatchedArray ? nameMatchedArray[0] : '';
     return this;
   }
 

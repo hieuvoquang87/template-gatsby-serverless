@@ -5,7 +5,8 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "cdk": "cdk"
+    "synth": "tsc && cdk synth",
+    "deploy": "cdk deploy"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -18,14 +19,15 @@
     "typescript": "~3.7.2"
   },
   "dependencies": {
-    "@aws-cdk/aws-certificatemanager": "*",
-    "@aws-cdk/aws-cloudfront": "*",
-    "@aws-cdk/aws-iam": "*",
-    "@aws-cdk/aws-route53": "*",
-    "@aws-cdk/aws-route53-targets": "*",
-    "@aws-cdk/aws-s3": "*",
-    "@aws-cdk/aws-s3-deployment": "*",
-    "@aws-cdk/core": "*",
-    "aws-cdk": "*"
+    "@aws-cdk/aws-certificatemanager": "^1.30.0",
+    "@aws-cdk/aws-cloudfront": "^1.30.0",
+    "@aws-cdk/aws-codebuild": "^1.30.0",
+    "@aws-cdk/aws-iam": "^1.30.0",
+    "@aws-cdk/aws-route53": "^1.30.0",
+    "@aws-cdk/aws-route53-targets": "^1.30.0",
+    "@aws-cdk/aws-s3": "^1.30.0",
+    "@aws-cdk/aws-s3-deployment": "^1.30.0",
+    "@aws-cdk/core": "^1.30.0",
+    "aws-cdk": "^1.30.0"
   }
 }

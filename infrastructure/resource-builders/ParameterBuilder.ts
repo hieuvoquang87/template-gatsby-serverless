@@ -14,22 +14,26 @@ export class ParameterBuilder {
 
   constructor() {}
 
-  setParameterProps(props: ParameterProps) {
+  setParameterProps(props: ParameterProps): ParameterBuilder {
     this.parameterKey = props.key;
     this.parameterValue = props.value;
     this.parameterType = props.type || ParameterType.STRING;
+    return this;
   }
 
-  setKey(key: string) {
+  setKey(key: string): ParameterBuilder {
     this.parameterKey = key;
+    return this;
   }
 
-  setValue(value: string) {
+  setValue(value: string): ParameterBuilder {
     this.parameterValue = value;
+    return this;
   }
 
-  setType(type: ParameterType) {
+  setType(type: ParameterType): ParameterBuilder {
     this.parameterType = type;
+    return this;
   }
 
   buildStringParameter(scope: Construct, id: string): StringParameter {

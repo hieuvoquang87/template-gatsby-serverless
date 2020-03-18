@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-import cdk = require('@aws-cdk/core');
-import { StaticSite } from './static-site';
+import { Stack, App, StackProps} from '@aws-cdk/core';
 import { S3BucketBuilder } from './resource-builders/S3BucketBuilder';
 import { CloudFrontBuilder } from './resource-builders/CloudFrontBuilder';
 /**
@@ -14,28 +13,37 @@ import { CloudFrontBuilder } from './resource-builders/CloudFrontBuilder';
  *   }
  * }
 **/
-class MyStaticSiteStack extends cdk.Stack {
-    constructor(parent: cdk.App, name: string, props: cdk.StackProps) {
+class MyStaticSiteStack extends Stack {
+    constructor(parent: App, name: string, props: StackProps) {
         super(parent, name, props);
 
         // new StaticSite(this, 'StaticSite', {
         //     domainName: this.node.tryGetContext('domain'),
         //     siteSubDomain: this.node.tryGetContext('subdomain'),
         // });
+
+        const accountId = Stack.of(this).account;
+        const region = Stack.of(this).region;
+
         const s3Builder = new S3BucketBuilder()
         const cfBuilder = new CloudFrontBuilder();
 
         const originAccessIdentity = cfBuilder.buildOriginAccessIdentity(this, 'OAI for S3 Bucket');
         const s3Bucket = s3Builder
             .setBucketName(`frontend-bucket-coxautolab36`)
-            .addCloudfrontOriginAccessIdentity(originAccessIdentity)
             .build(this, `S3Bucket for FrontEnd`)
-
+            .addCloudfrontOriginAccessIdentity(originAccessIdentity)
+        cfBuilder.addS3OriginSource({
+            s3BucketSource: s3Bucket,
+            originAccessIdentity,
+            originPath: '/blue',
+            disableCache: true
+        }).build(this, 'Cloudfront for Frontend')
 
    }
 }
 
-const app = new cdk.App();
+const app = new App();
 
 new MyStaticSiteStack(app, 'FrontEndStack', { env: {
     // Stack must be in us-east-1, because the ACM certificate for a
