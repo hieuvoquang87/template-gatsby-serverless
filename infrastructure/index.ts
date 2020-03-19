@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-import { Stack, App, StackProps} from '@aws-cdk/core';
+import { Stack, App, StackProps, SecretValue} from '@aws-cdk/core';
+import { StringParameter } from '@aws-cdk/aws-ssm';
+import { Bucket } from '@aws-cdk/aws-s3';
 import { S3BucketBuilder } from './resource-builders/S3BucketBuilder';
 import { CloudFrontBuilder } from './resource-builders/CloudFrontBuilder';
 import { CodePiplineStageBuilder, CodePipelineBuilder} from './resource-builders/CodePipelineBuilder';
-import { CodeBuildBuilder, CodeBuildEnvironmentType, CodeBuildEnvironmentSize, CodeBuildEnvironmentImage } from './resource-builders/CodeBuildBuilder';
 
 /**
  * This stack relies on getting the domain name from CDK context.
@@ -56,22 +57,30 @@ class CodePipelineStack extends Stack {
         const cplBuilder = new CodePipelineBuilder();
 
         const codeBuildProject = cplBuilder.buildPipelineProject(this, 'PipelineProject')
-            
 
+        const githubOauthToken = StringParameter.valueForStringParameter(this, '/hqv/github-token');
         const sourceStage = sourceStageBuilder
             .setStageName('SourceStage')
-            .addGitHubSourceAction()
+            .addArtifact('githubSourceOutput')
+            .addGitHubSourceAction({
+                actionName: 'GitHubSourceAction',
+                repoOwner: 'hieuvoquang87',
+                repoName: 'template-gatsby-serverless',
+                oauthToken: new SecretValue(githubOauthToken),
+                outputArtifactName: 'githubSourceOutput'
+            })
             .build();
         const buildStage = buildStageBuilder
             .setStageName('BuildStage')
             .addCodeBuildAction({
                 actionName: 'CodeBuildAction',
-                input: sourceStage.outputs[0],
+                input: sourceStage.outputs['githubSourceOutput'],
                 project: codeBuildProject
             })
             .build()
 
         const pipeline = cplBuilder
+            .setArtifactBucket(Bucket.fromBucketName(this, 'ArtifactBucket','artifacts-432267630742'))
             .addStage(sourceStage)
             .addStage(buildStage)
             .build(this, 'AwsCdk')
