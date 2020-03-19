@@ -58,6 +58,8 @@ class CodePipelineStack extends Stack {
 
         const codeBuildProject = cplBuilder.buildPipelineProject(this, 'PipelineProject')
 
+        const cpSourceActionBucket = Bucket.fromBucketName(this, 'CodePipelineBucket','codepipeline-source-action-432267630742')
+
         const githubOauthToken = StringParameter.valueForStringParameter(this, '/hqv/github-token');
         const sourceStage = sourceStageBuilder
             .setStageName('SourceStage')
@@ -70,11 +72,19 @@ class CodePipelineStack extends Stack {
                 outputArtifactName: 'githubSourceOutput'
             })
             .build();
+
+        // const sourceStage = sourceStageBuilder
+        //     .setStageName('SourceStage')
+        //     .addArtifact('s3SourceOutput')
+        //     .addS3SourceAction('S3SourceAction', 's3SourceOutput', cpSourceActionBucket)
+        //     .build();
+
         const buildStage = buildStageBuilder
             .setStageName('BuildStage')
             .addCodeBuildAction({
                 actionName: 'CodeBuildAction',
                 input: sourceStage.outputs['githubSourceOutput'],
+                // input: sourceStage.outputs['s3SourceOutput'],
                 project: codeBuildProject
             })
             .build()

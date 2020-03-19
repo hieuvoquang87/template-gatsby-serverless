@@ -1,8 +1,8 @@
 import { Bucket, IBucket } from '@aws-cdk/aws-s3';
 import { Construct, SecretValue } from '@aws-cdk/core';
 import { Pipeline, StageProps, IAction, IStage, Artifact } from '@aws-cdk/aws-codepipeline';
-import { GitHubSourceAction, CodeBuildAction, CodeBuildActionProps } from '@aws-cdk/aws-codepipeline-actions';
-import { PipelineProject, IProject, BuildSpec } from '@aws-cdk/aws-codebuild';
+import { GitHubSourceAction, CodeBuildAction, CodeBuildActionProps, S3SourceAction } from '@aws-cdk/aws-codepipeline-actions';
+import { PipelineProject, IProject, BuildSpec, BuildEnvironmentVariableType } from '@aws-cdk/aws-codebuild';
 
 export interface CodePipelineStage extends StageProps {
   inputs: Record<string, Artifact>
@@ -25,6 +25,20 @@ export class CodePiplineStageBuilder {
     return this;
   }
 
+  addS3SourceAction(actionName: string, outputArtifactName: string, bucket: IBucket) {
+    const artifact = this.outputs[outputArtifactName];
+    if(!artifact) throw new Error(`Missing Output Artifact for S3SourceAction`);
+
+    const s3SourceAction = new S3SourceAction({
+      actionName,
+      bucket,
+      bucketKey: 'codepipelineSourceAction',
+      output: artifact
+    })
+    this.actions.push(s3SourceAction);
+    return this;
+  }
+
   addGitHubSourceAction({ actionName, repoOwner, repoName, oauthToken, outputArtifactName }: { actionName: string, repoOwner: string, repoName: string, oauthToken: SecretValue, outputArtifactName: string } ): CodePiplineStageBuilder {
     // const oauthToken = new SecretValue('5907fa0f49df1ea4654e43bef5d3f67fc6eab6be');
     const artifact = this.outputs[outputArtifactName];
@@ -35,7 +49,8 @@ export class CodePiplineStageBuilder {
       owner: repoOwner,
       repo: repoName,
       oauthToken,
-      output: artifact
+      output: artifact,
+      variablesNamespace: 'SourceVariables'
     })
     this.actions.push(githubSourceAction);
     return this;
@@ -46,6 +61,20 @@ export class CodePiplineStageBuilder {
       actionName,
       input,
       project,
+      environmentVariables: {
+        "COMMIT_ID": {
+          value: '#{SourceVariables.CommitId}',
+          type: BuildEnvironmentVariableType.PLAINTEXT
+        },
+        "REPO_NAME": {
+          value: '#{SourceVariables.RepositoryName}',
+          type: BuildEnvironmentVariableType.PLAINTEXT
+        },
+        "BRANCH_NAME": {
+          value: '#{SourceVariables.BranchName}',
+          type: BuildEnvironmentVariableType.PLAINTEXT
+        }
+      }
     });
     this.actions.push(codebuildAction);
     return this;
