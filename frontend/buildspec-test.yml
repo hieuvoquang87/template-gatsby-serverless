@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    APPKEY: 'frontend'
+    APPKEY: 'test'
 
 phases:
   install:
@@ -13,8 +13,6 @@ phases:
       #######################################################################
       - echo :Set up environment
       #######################################################################
-      # - apt-get update
-      # - apt-get install -y jq
       - echo $(env)
 
   pre_build:
@@ -23,6 +21,7 @@ phases:
       - echo :Installing dependencies
       #######################################################################
       - cd ${CODEBUILD_SRC_DIR}/frontend/web-blog
+      - ls -l
       - npm install
 
   build:
@@ -37,11 +36,8 @@ phases:
       - echo :Copy build folder to s3
       #######################################################################
       - cd ${CODEBUILD_SRC_DIR}/frontend
+      - ls -l
 
       #######################################################################
       - echo :Trigger subsequent build for running end-to-end integration automation tests
       #######################################################################
-
-artifacts:
-  files:
-    - "**/*"

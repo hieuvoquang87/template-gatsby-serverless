@@ -97,7 +97,7 @@ class CodePipelineStack extends Stack {
             .build()
 
         const codeBuildTestProject = cplBuilder.buildPipelineProject(this, 'PipelineTestProject', {
-            buildSpec: BuildSpec.fromSourceFilename('frontend/buildspec.yml')
+            buildSpec: BuildSpec.fromSourceFilename('frontend/buildspec-test.yml')
         })
         const testStage = testStageBuilder
             .setStageName('TestStage')
