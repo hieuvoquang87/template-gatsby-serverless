@@ -1,8 +1,8 @@
-import { Bucket, IBucket } from '@aws-cdk/aws-s3';
+import { IBucket } from '@aws-cdk/aws-s3';
 import { Construct, SecretValue } from '@aws-cdk/core';
-import { Pipeline, StageProps, IAction, IStage, Artifact } from '@aws-cdk/aws-codepipeline';
+import { Pipeline, StageProps, IAction, Artifact } from '@aws-cdk/aws-codepipeline';
 import { GitHubSourceAction, CodeBuildAction, CodeBuildActionProps, S3SourceAction } from '@aws-cdk/aws-codepipeline-actions';
-import { PipelineProject, IProject, BuildSpec, BuildEnvironmentVariableType } from '@aws-cdk/aws-codebuild';
+import { PipelineProject, IProject, BuildEnvironmentVariableType, PipelineProjectProps } from '@aws-cdk/aws-codebuild';
 
 export interface CodePipelineStage extends StageProps {
   inputs: Record<string, Artifact>
@@ -13,6 +13,23 @@ export class CodePiplineStageBuilder {
   private actions: Array<IAction> = []
   private inputs: Record<string, Artifact> = {}
   private outputs: Record<string, Artifact> = {}
+
+  getGitHubSourceOutputVariables() {
+    return {
+      "COMMIT_ID": {
+        value: '#{SourceVariables.CommitId}',
+        type: BuildEnvironmentVariableType.PLAINTEXT
+      },
+      "REPOSITORY_NAME": {
+        value: '#{SourceVariables.RepositoryName}',
+        type: BuildEnvironmentVariableType.PLAINTEXT
+      },
+      "BRANCH_NAME": {
+        value: '#{SourceVariables.BranchName}',
+        type: BuildEnvironmentVariableType.PLAINTEXT
+      }
+    }
+  }
 
   setStageName(stageName: string): CodePiplineStageBuilder {
     this.stageName = stageName;
@@ -56,25 +73,16 @@ export class CodePiplineStageBuilder {
     return this;
   }
 
-  addCodeBuildAction({ actionName, input, project }: CodeBuildActionProps ): CodePiplineStageBuilder {
+  addCodeBuildAction({ actionName, input, outputs, project, environmentVariables }: CodeBuildActionProps ): CodePiplineStageBuilder {
+    if(outputs && outputs?.length > 0) {
+      outputs.forEach((output) => output.artifactName ? this.outputs[output.artifactName] = output : '')
+    }
     const codebuildAction = new CodeBuildAction({
       actionName,
       input,
+      outputs,
       project,
-      environmentVariables: {
-        "COMMIT_ID": {
-          value: '#{SourceVariables.CommitId}',
-          type: BuildEnvironmentVariableType.PLAINTEXT
-        },
-        "REPO_NAME": {
-          value: '#{SourceVariables.RepositoryName}',
-          type: BuildEnvironmentVariableType.PLAINTEXT
-        },
-        "BRANCH_NAME": {
-          value: '#{SourceVariables.BranchName}',
-          type: BuildEnvironmentVariableType.PLAINTEXT
-        }
-      }
+      environmentVariables
     });
     this.actions.push(codebuildAction);
     return this;
@@ -112,9 +120,7 @@ export class CodePipelineBuilder {
     })
   }
 
-  buildPipelineProject(scope: Construct, id: string): IProject {
-    return new PipelineProject(scope, `${id}-PipelineCodeBuildProject`, {
-      buildSpec: BuildSpec.fromSourceFilename('frontend/buildspec.yml')
-    })
+  buildPipelineProject(scope: Construct, id: string, props?: PipelineProjectProps): IProject {
+    return new PipelineProject(scope, `${id}-PipelineCodeBuildProject`, props)
   }
 }

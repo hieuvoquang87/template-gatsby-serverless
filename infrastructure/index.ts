@@ -2,9 +2,11 @@
 import { Stack, App, StackProps, SecretValue} from '@aws-cdk/core';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 import { Bucket } from '@aws-cdk/aws-s3';
+import { BuildSpec } from '@aws-cdk/aws-codebuild';
 import { S3BucketBuilder } from './resource-builders/S3BucketBuilder';
 import { CloudFrontBuilder } from './resource-builders/CloudFrontBuilder';
 import { CodePiplineStageBuilder, CodePipelineBuilder} from './resource-builders/CodePipelineBuilder';
+import { Artifact } from '@aws-cdk/aws-codepipeline';
 
 /**
  * This stack relies on getting the domain name from CDK context.
@@ -53,10 +55,9 @@ class CodePipelineStack extends Stack {
 
         const sourceStageBuilder = new CodePiplineStageBuilder();
         const buildStageBuilder = new CodePiplineStageBuilder();
+        const testStageBuilder = new CodePiplineStageBuilder();
 
         const cplBuilder = new CodePipelineBuilder();
-
-        const codeBuildProject = cplBuilder.buildPipelineProject(this, 'PipelineProject')
 
         const cpSourceActionBucket = Bucket.fromBucketName(this, 'CodePipelineBucket','codepipeline-source-action-432267630742')
 
@@ -79,13 +80,32 @@ class CodePipelineStack extends Stack {
         //     .addS3SourceAction('S3SourceAction', 's3SourceOutput', cpSourceActionBucket)
         //     .build();
 
+        const codeBuildBuildProject = cplBuilder.buildPipelineProject(this, 'PipelineBuildProject', {
+            buildSpec: BuildSpec.fromSourceFilename('frontend/buildspec.yml')
+        })
         const buildStage = buildStageBuilder
             .setStageName('BuildStage')
             .addCodeBuildAction({
-                actionName: 'CodeBuildAction',
+                actionName: 'CodeBuildBuildAction',
                 input: sourceStage.outputs['githubSourceOutput'],
+                outputs: [new Artifact('codeBuildOutput')],
+                environmentVariables: { ...buildStageBuilder.getGitHubSourceOutputVariables() },
                 // input: sourceStage.outputs['s3SourceOutput'],
-                project: codeBuildProject
+                project: codeBuildBuildProject,
+                variablesNamespace: 'CodeBuildVariables'
+            })
+            .build()
+
+        const codeBuildTestProject = cplBuilder.buildPipelineProject(this, 'PipelineTestProject', {
+            buildSpec: BuildSpec.fromSourceFilename('frontend/buildspec.yml')
+        })
+        const testStage = testStageBuilder
+            .setStageName('TestStage')
+            .addCodeBuildAction({
+                actionName: 'CodeBuildTestAction',
+                input: buildStage.outputs['codeBuildOutput'],
+                environmentVariables: { ...buildStageBuilder.getGitHubSourceOutputVariables() },
+                project: codeBuildTestProject
             })
             .build()
 
@@ -93,6 +113,7 @@ class CodePipelineStack extends Stack {
             .setArtifactBucket(Bucket.fromBucketName(this, 'ArtifactBucket','artifacts-432267630742'))
             .addStage(sourceStage)
             .addStage(buildStage)
+            .addStage(testStage)
             .build(this, 'AwsCdk')
    }
 }
