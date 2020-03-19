@@ -19,16 +19,10 @@ phases:
 
   pre_build:
     commands:
-      - |
-        METADATA=$(echo '{}' | jq -c \
-        --arg sourceVersion $CODEBUILD_RESOLVED_SOURCE_VERSION \
-        --arg sourceRepoUrl $CODEBUILD_SOURCE_REPO_URL \
-        '. + {"source-version":$sourceVersion, "source-repo-url":$sourceRepoUrl}')
-      - echo $METADATA
       #######################################################################
       - echo :Installing dependencies
       #######################################################################
-      - cd ${CODEBUILD_SRC_DIR}/frontend
+      - cd ${CODEBUILD_SRC_DIR}/frontend/web-blog
       - npm install
 
   build:
