@@ -1,0 +1,49 @@
+version: 0.2
+
+env:
+  variables:
+    APPKEY: 'frontend'
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 10
+
+    commands:
+      #######################################################################
+      - echo :Set up environment
+      #######################################################################
+      - apt-get update
+      - apt-get install -y jq
+      - echo $(env)
+
+  pre_build:
+    commands:
+      - |
+        METADATA=$(echo '{}' | jq -c \
+        --arg sourceVersion $CODEBUILD_RESOLVED_SOURCE_VERSION \
+        --arg sourceRepoUrl $CODEBUILD_SOURCE_REPO_URL \
+        '. + {"source-version":$sourceVersion, "source-repo-url":$sourceRepoUrl}')
+      - echo $METADATA
+      #######################################################################
+      - echo :Installing dependencies
+      #######################################################################
+      - cd ${CODEBUILD_SRC_DIR}/frontend
+      - npm install
+
+  build:
+    commands:
+      #######################################################################
+      - echo :Running build
+      #######################################################################
+
+  post_build:
+    commands:
+      #######################################################################
+      - echo :Copy build folder to s3
+      #######################################################################
+      - cd ${CODEBUILD_SRC_DIR}/frontend
+
+      #######################################################################
+      - echo :Trigger subsequent build for running end-to-end integration automation tests
+      #######################################################################
