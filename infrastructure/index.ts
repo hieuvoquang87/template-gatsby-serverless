@@ -81,7 +81,10 @@ class CodePipelineStack extends Stack {
             .build();
 
         const codeBuildBuildProject = cplBuilder.buildPipelineProject(this, 'PipelineBuildProject', {
-            buildSpec: BuildSpec.fromSourceFilename('frontend/buildspec.yml')
+            buildSpec: BuildSpec.fromSourceFilename('frontend/buildspec.yml'),
+            environment: {
+                buildImage: LinuxBuildImage.AMAZON_LINUX_2_2
+            }
         })
         const buildStage = buildStageBuilder
             .setStageName('BuildStage')
@@ -97,7 +100,10 @@ class CodePipelineStack extends Stack {
             .build()
 
         const codeBuildTestProject = cplBuilder.buildPipelineProject(this, 'PipelineTestProject', {
-            buildSpec: BuildSpec.fromSourceFilename('frontend/buildspec-test.yml')
+            buildSpec: BuildSpec.fromSourceFilename('frontend/buildspec-test.yml'),
+            environment: {
+                buildImage: LinuxBuildImage.AMAZON_LINUX_2_2
+            }
         })
         const testStage = testStageBuilder
             .setStageName('TestStage')
