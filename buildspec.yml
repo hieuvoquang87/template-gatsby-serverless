@@ -25,6 +25,7 @@ phases:
       # - npm install
       - source ./cb-extras.sh
       - ls -la
+      - cat ./env.sh
 
   build:
     commands:

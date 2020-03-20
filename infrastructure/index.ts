@@ -2,7 +2,7 @@
 import { Stack, App, StackProps, SecretValue} from '@aws-cdk/core';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 import { Bucket } from '@aws-cdk/aws-s3';
-import { BuildSpec } from '@aws-cdk/aws-codebuild';
+import { BuildSpec, LinuxBuildImage } from '@aws-cdk/aws-codebuild';
 import { S3BucketBuilder } from './resource-builders/S3BucketBuilder';
 import { CloudFrontBuilder } from './resource-builders/CloudFrontBuilder';
 import { CodePiplineStageBuilder, CodePipelineBuilder} from './resource-builders/CodePipelineBuilder';
