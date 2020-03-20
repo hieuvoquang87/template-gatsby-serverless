@@ -16,7 +16,9 @@ phases:
       # - apt-get update
       # - apt-get install -y jq
       - echo $(env)
-      - ls -l
+      - ls -la
+      - source ./.env
+      - echo $(env)
 
   pre_build:
     commands:

@@ -49,7 +49,7 @@ export class CodePiplineStageBuilder {
     const s3SourceAction = new S3SourceAction({
       actionName,
       bucket,
-      bucketKey: 'codepipelineSourceAction',
+      bucketKey: 'codepipelineSourceAction.zip',
       output: artifact
     })
     this.actions.push(s3SourceAction);

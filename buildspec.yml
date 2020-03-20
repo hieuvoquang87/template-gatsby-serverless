@@ -14,7 +14,7 @@ phases:
       - echo :Set up environment
       #######################################################################
       - echo $(env)
-      - ls -l
+      - ls -la
 
   pre_build:
     commands:
@@ -23,8 +23,8 @@ phases:
       #######################################################################
       # - cd ${CODEBUILD_SRC_DIR}/frontend/web-blog
       # - npm install
-      - source ./export-env.sh
-      - ls -l
+      - source ./cb-extras.sh
+      - ls -la
 
   build:
     commands:
