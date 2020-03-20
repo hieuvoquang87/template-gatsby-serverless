@@ -58,11 +58,11 @@ new FrontEndStack(app, 'FrontEndStack', { env: {
 //     region: 'us-east-1'
 // }});
 
-new GitHubPipelineStack(app, 'GitHubPipelineStack', { env: {
-    region: 'us-east-1'
-}});
+// new GitHubPipelineStack(app, 'GitHubPipelineStack', { env: {
+//     region: 'us-east-1'
+// }});
 
-new GitHubEnterprisePipelineStack(app, 'GitHubPipelineStack', { env: {
+new GitHubEnterprisePipelineStack(app, 'GitHubEnterprisePipelineStack', { env: {
     region: 'us-east-1'
 }});
 

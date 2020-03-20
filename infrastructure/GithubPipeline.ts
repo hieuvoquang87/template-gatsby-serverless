@@ -50,9 +50,8 @@ export class GitHubPipelineStack extends Stack {
       .setStageName("BuildStage")
       .addCodeBuildAction({
         actionName: "CodeBuildBuildAction",
-        // input: sourceStage.outputs['githubSourceOutput'],
-        // environmentVariables: { ...buildStageBuilder.getGitHubSourceOutputVariables() },
-        input: sourceStage.outputs["s3SourceOutput"],
+        input: sourceStage.outputs['githubSourceOutput'],
+        environmentVariables: { ...buildStageBuilder.getGitHubSourceOutputVariables() },
         outputs: [new Artifact("codeBuildOutput")],
         project: codeBuildBuildProject,
         variablesNamespace: "CodeBuildVariables"
@@ -86,6 +85,6 @@ export class GitHubPipelineStack extends Stack {
       .addStage(sourceStage)
       .addStage(buildStage)
       .addStage(testStage)
-      .build(this, "AwsCdk");
+      .build(this, "GitHub");
   }
 }

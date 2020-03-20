@@ -1,6 +1,6 @@
 import { IRole } from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/core';
-import { Project,  IProject, CfnProjectProps, CfnProject, ProjectProps, Artifacts, ArtifactsProps, SourceProps, S3ArtifactsProps } from '@aws-cdk/aws-codebuild';
+import { Project, IProject, ProjectProps, Artifacts, ArtifactsProps, S3ArtifactsProps, Source, GitHubEnterpriseSourceProps, FilterGroup, EventAction, ISource, IArtifacts, LinuxBuildImage } from '@aws-cdk/aws-codebuild';
 
 // export enum CodeBuildSourceType {
 //   BITBUCKET = 'BITBUCKET',
@@ -60,11 +60,11 @@ import { Project,  IProject, CfnProjectProps, CfnProject, ProjectProps, Artifact
 
 export class CodeBuildBuilder {
   private projectProps: ProjectProps
-  // private serviceRole: IRole
-  private source: SourceProps
-  private artifacts: ArtifactsProps
+  private serviceRole: IRole
+  private source: ISource
+  private artifacts: IArtifacts
   // private environment: EnvironmentProperty
-  // private projectName: string
+  private projectName: string
   // private triggers: CfnProject.ProjectTriggersProperty
 
   constructor() {}
@@ -74,18 +74,24 @@ export class CodeBuildBuilder {
     return this;
   }
 
-  // setProjectName(name: string): CodeBuildBuilder {
-  //   this.projectName = name;
-  //   return this;
-  // }
+  setProjectName(name: string): CodeBuildBuilder {
+    this.projectName = name;
+    return this;
+  }
 
-  // setServiceRole(role: IRole): CodeBuildBuilder {
-  //   this.serviceRole = role;
-  //   return this;
-  // }
+  setServiceRole(role: IRole): CodeBuildBuilder {
+    this.serviceRole = role;
+    return this;
+  }
 
-  setSource(source: SourceProps): CodeBuildBuilder {
-    this.source = source;
+  setSource(source: ISource): CodeBuildBuilder {
+    this.source = source
+    return this;
+  }
+
+  setSourceGitHubEnterprise(source: GitHubEnterpriseSourceProps): CodeBuildBuilder {
+    const gheSource = Source.gitHubEnterprise(source)
+    this.source = gheSource;
     return this;
   }
 
@@ -105,7 +111,15 @@ export class CodeBuildBuilder {
   // }
 
   buildAmznLinuxProject(scope: Construct, id: string): IProject {
-    const project = new Project(scope, id, this.projectProps)
+    const project = new Project(scope, id, {
+      projectName: this.projectName,
+      source: this.source,
+      artifacts: this.artifacts,
+      role: this.serviceRole,
+      environment: {
+        buildImage: LinuxBuildImage.AMAZON_LINUX_2_2
+      }
+    })
 
     return project;
   }
