@@ -13,18 +13,17 @@ phases:
       #######################################################################
       - echo :Set up environment
       #######################################################################
-      # - apt-get update
-      # - apt-get install -y jq
       - echo $(env)
-      - ls -l
 
   pre_build:
     commands:
       #######################################################################
       - echo :Installing dependencies
       #######################################################################
-      - cd ${CODEBUILD_SRC_DIR}/frontend/web-blog
-      - npm install
+      # - cd ${CODEBUILD_SRC_DIR}/frontend/web-blog
+      # - npm install
+      - source export-env.sh
+      - ls -l
 
   build:
     commands:
@@ -37,7 +36,6 @@ phases:
       #######################################################################
       - echo :Copy build folder to s3
       #######################################################################
-      - cd ${CODEBUILD_SRC_DIR}/frontend
 
       #######################################################################
       - echo :Trigger subsequent build for running end-to-end integration automation tests

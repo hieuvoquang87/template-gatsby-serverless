@@ -61,24 +61,24 @@ class CodePipelineStack extends Stack {
 
         const cpSourceActionBucket = Bucket.fromBucketName(this, 'CodePipelineBucket','codepipeline-source-action-432267630742')
 
-        const githubOauthToken = StringParameter.valueForStringParameter(this, '/hqv/github-token');
-        const sourceStage = sourceStageBuilder
-            .setStageName('SourceStage')
-            .addArtifact('githubSourceOutput')
-            .addGitHubSourceAction({
-                actionName: 'GitHubSourceAction',
-                repoOwner: 'hieuvoquang87',
-                repoName: 'template-gatsby-serverless',
-                oauthToken: new SecretValue(githubOauthToken),
-                outputArtifactName: 'githubSourceOutput'
-            })
-            .build();
-
+        // const githubOauthToken = StringParameter.valueForStringParameter(this, '/hqv/github-token');
         // const sourceStage = sourceStageBuilder
         //     .setStageName('SourceStage')
-        //     .addArtifact('s3SourceOutput')
-        //     .addS3SourceAction('S3SourceAction', 's3SourceOutput', cpSourceActionBucket)
+        //     .addArtifact('githubSourceOutput')
+        //     .addGitHubSourceAction({
+        //         actionName: 'GitHubSourceAction',
+        //         repoOwner: 'hieuvoquang87',
+        //         repoName: 'template-gatsby-serverless',
+        //         oauthToken: new SecretValue(githubOauthToken),
+        //         outputArtifactName: 'githubSourceOutput'
+        //     })
         //     .build();
+
+        const sourceStage = sourceStageBuilder
+            .setStageName('SourceStage')
+            .addArtifact('s3SourceOutput')
+            .addS3SourceAction('S3SourceAction', 's3SourceOutput', cpSourceActionBucket)
+            .build();
 
         const codeBuildBuildProject = cplBuilder.buildPipelineProject(this, 'PipelineBuildProject', {
             buildSpec: BuildSpec.fromSourceFilename('frontend/buildspec.yml')
@@ -87,10 +87,10 @@ class CodePipelineStack extends Stack {
             .setStageName('BuildStage')
             .addCodeBuildAction({
                 actionName: 'CodeBuildBuildAction',
-                input: sourceStage.outputs['githubSourceOutput'],
+                // input: sourceStage.outputs['githubSourceOutput'],
+                // environmentVariables: { ...buildStageBuilder.getGitHubSourceOutputVariables() },
+                input: sourceStage.outputs['s3SourceOutput'],
                 outputs: [new Artifact('codeBuildOutput')],
-                environmentVariables: { ...buildStageBuilder.getGitHubSourceOutputVariables() },
-                // input: sourceStage.outputs['s3SourceOutput'],
                 project: codeBuildBuildProject,
                 variablesNamespace: 'CodeBuildVariables'
             })
@@ -104,7 +104,7 @@ class CodePipelineStack extends Stack {
             .addCodeBuildAction({
                 actionName: 'CodeBuildTestAction',
                 input: buildStage.outputs['codeBuildOutput'],
-                environmentVariables: { ...buildStageBuilder.getGitHubSourceOutputVariables() },
+                // environmentVariables: { ...buildStageBuilder.getGitHubSourceOutputVariables() },
                 project: codeBuildTestProject
             })
             .build()
