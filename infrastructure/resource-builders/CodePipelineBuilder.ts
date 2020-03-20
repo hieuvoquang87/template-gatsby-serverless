@@ -42,21 +42,21 @@ export class CodePiplineStageBuilder {
     return this;
   }
 
-  addS3SourceAction(actionName: string, outputArtifactName: string, bucket: IBucket) {
+  addS3SourceAction({ actionName, outputArtifactName, sourceBucket, sourceBucketKey }: { actionName: string, outputArtifactName: string, sourceBucket: IBucket, sourceBucketKey: string }) {
     const artifact = this.outputs[outputArtifactName];
     if(!artifact) throw new Error(`Missing Output Artifact for S3SourceAction`);
 
     const s3SourceAction = new S3SourceAction({
       actionName,
-      bucket,
-      bucketKey: 'codepipelineSourceAction.zip',
+      bucket: sourceBucket,
+      bucketKey: sourceBucketKey,
       output: artifact
     })
     this.actions.push(s3SourceAction);
     return this;
   }
 
-  addGitHubSourceAction({ actionName, repoOwner, repoName, oauthToken, outputArtifactName }: { actionName: string, repoOwner: string, repoName: string, oauthToken: SecretValue, outputArtifactName: string } ): CodePiplineStageBuilder {
+  addGitHubSourceAction({ actionName, repoOwner, repoName, oauthToken, outputArtifactName }: { actionName: string, repoOwner: string, repoName: string, oauthToken: SecretValue, outputArtifactName: string }): CodePiplineStageBuilder {
     // const oauthToken = new SecretValue('5907fa0f49df1ea4654e43bef5d3f67fc6eab6be');
     const artifact = this.outputs[outputArtifactName];
     if(!artifact) throw new Error(`Missing Output Artifact for GitHubSourceAction ${actionName}`);
