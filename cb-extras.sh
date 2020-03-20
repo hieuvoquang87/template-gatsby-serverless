@@ -19,6 +19,5 @@ echo "==> GIT_ESCAPED_BRANCH = $GIT_ESCAPED_BRANCH"
 echo "==> PULL_REQUEST = $PULL_REQUEST"
 echo "==> BRANCH_IDENTIFIER = $BRANCH_IDENTIFIER"
 
-echo "#!/bin/sh" > env.sh
-echo "export BRANCH_IDENTIFIER=${BRANCH_IDENTIFIER}" > env.sh
-echo "export GIT_BRANCH=${GIT_BRANCH}" > env.sh
+echo "export BRANCH_IDENTIFIER=test" >> env.sh
+echo "export GIT_BRANCH=test" >> env.sh
