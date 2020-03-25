@@ -4,8 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "synth": "cdk synth",
+    "deploy": "cdk deploy"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^10.17.17",
+    "ts-node": "^8.8.1",
+    "typescript": "~3.7.2"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-ssm": "^1.30.0",
+    "@aws-cdk/core": "^1.30.0",
+    "aws-cdk": "^1.30.0",
+    "aws-cdk-stack-builders": "^0.1.1"
+  }
 }
