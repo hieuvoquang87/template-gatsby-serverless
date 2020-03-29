@@ -25,15 +25,15 @@ Mappings:
       Short: usw1
 
 Resources:
-  CoreServiceStack:
+  MainStack:
     Type: "AWS::CloudFormation::Stack"
     Properties:
       Parameters:
         Environment: !Ref Environment
         BranchIdentifier: !Ref BranchIdentifier
-      TemplateURL: ./core-service/cloudformation.yaml
+      TemplateURL: ./main-stack.yaml
 
 Outputs:
   ApiUrl:
     Description: "Widget Ratings Api"
-    Value: !GetAtt CoreServiceStack.Outputs.ApiUrl
+    Value: !GetAtt MainStack.Outputs.ApiUrl

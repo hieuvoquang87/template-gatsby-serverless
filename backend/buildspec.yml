@@ -1,0 +1,58 @@
+version: 0.2
+
+env:
+  variables:
+    APPKEY: 'frontend'
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 10
+
+    commands:
+      #######################################################################
+      - echo :Set up environment
+      #######################################################################
+      - echo $(env)
+      - |
+        export GIT_BRANCH="$(echo $CODEBUILD_WEBHOOK_HEAD_REF | sed -e "s/^refs\/heads\///" | sed "s/\-.*//g")"
+        export PULL_REQUEST=false
+        if [ "${GIT_BRANCH#pr-}" != "$GIT_BRANCH" ] ; then
+          export PULL_REQUEST=${GIT_BRANCH#pr-};
+        fi
+        export BRANCH_IDENTIFIER="$(echo $GIT_BRANCH | sed 's/\-.*//g')"
+        echo "==> GIT_BRANCH = $GIT_BRANCH"
+        echo "==> PULL_REQUEST = $PULL_REQUEST"
+        echo "==> BRANCH_IDENTIFIER = $BRANCH_IDENTIFIER"
+        echo "export BRANCH_IDENTIFIER=${BRANCH_IDENTIFIER}" >> env.sh
+        echo "export GIT_BRANCH=${GIT_BRANCH}" >> env.sh
+      - ls -la
+
+  pre_build:
+    commands:
+      #######################################################################
+      - echo :Installing dependencies
+      #######################################################################
+      # - cd ${CODEBUILD_SRC_DIR}/frontend/web-blog
+      # - npm install
+
+
+  build:
+    commands:
+      #######################################################################
+      - echo :Running build
+      #######################################################################
+
+  post_build:
+    commands:
+      #######################################################################
+      - echo :Copy build folder to s3
+      #######################################################################
+
+      #######################################################################
+      - echo :Trigger subsequent build for running end-to-end integration automation tests
+      #######################################################################
+
+artifacts:
+  files:
+    - "**/*"
