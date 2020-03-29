@@ -2,6 +2,7 @@
 import { Stack, App, StackProps } from '@aws-cdk/core';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 import { CloudFrontS3StackBuilder } from 'aws-cdk-stack-builders/stack-builders/frontend/CloudFrontS3StackBuilder';
+import { SimpleGitHubPipelineStack } from 'aws-cdk-stack-builders/stacks/pipeline/SimpleGitHubPipelineStack';
 
 export class FrontEndStack extends Stack {
   constructor(parent: App, name: string, props: StackProps) {
@@ -28,8 +29,16 @@ export class FrontEndStack extends Stack {
       })
   }
 }
-
 const app = new App();
+const accountId = process.env.CDK_DEFAULT_ACCOUNT;
+const region = 'us-east-1'
+
+new SimpleGitHubPipelineStack(app, 'Template', {
+  artifactBucketName: `${region}-artifacts-${accountId}`,
+  repoName: 'https://github.com/hieuvoquang87/template-gatsby-serverless',
+  repoOwner: 'hieuvoquang87',
+  oauthTokenParameterKey: '/github/hieuvoquang87-token'
+})
 
 // const domain = app.node.tryGetContext('domain');
 // const subdomain = app.node.tryGetContext('subdomain');
