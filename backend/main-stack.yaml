@@ -55,8 +55,8 @@ Resources:
   CoreServiceFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./core-service
-      Handler: lambda.handler
+      CodeUri: ./nest-lambda
+      Handler: dist/lambda.handler
       MemorySize: 1024
       Role: !GetAtt LambdaExecutionRole.Arn
       Runtime: nodejs12.x
