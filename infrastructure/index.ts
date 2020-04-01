@@ -1,8 +1,8 @@
 #!/usr/bin/env ts-node
 import { Stack, App, StackProps } from '@aws-cdk/core';
 import { StringParameter } from '@aws-cdk/aws-ssm';
-import { CloudFrontS3StackBuilder } from 'aws-cdk-stack-builders/stack-builders/frontend/CloudFrontS3StackBuilder';
-import { SimpleGitHubPipelineStack } from 'aws-cdk-stack-builders/stacks/pipeline/SimpleGitHubPipelineStack';
+import { CloudFrontS3StackBuilder } from 'aws-cdk-modules/stack-builders/frontend/CloudFrontS3StackBuilder';
+import { SimpleGitHubPipelineStack } from 'aws-cdk-modules/stacks/pipeline/SimpleGitHubPipelineStack';
 
 export class FrontEndStack extends Stack {
   constructor(parent: App, name: string, props: StackProps) {
@@ -10,6 +10,7 @@ export class FrontEndStack extends Stack {
 
     const accountId = Stack.of(this).account;
     const region = Stack.of(this).region;
+
 
     const recordName = 'gatsby-stack';
     const domainName = 'labtest44.com';
@@ -37,7 +38,8 @@ new SimpleGitHubPipelineStack(app, 'Template', {
   artifactBucketName: `${region}-artifacts-${accountId}`,
   repoName: 'https://github.com/hieuvoquang87/template-gatsby-serverless',
   repoOwner: 'hieuvoquang87',
-  oauthTokenParameterKey: '/github/hieuvoquang87-token'
+  oauthTokenParameterKey: '/github/hieuvoquang87-token',
+  buildspecPath: 'buildspec.yml'
 })
 
 // const domain = app.node.tryGetContext('domain');

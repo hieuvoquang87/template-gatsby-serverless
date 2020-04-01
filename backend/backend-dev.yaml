@@ -16,6 +16,12 @@ Parameters:
   BranchIdentifier:
     Type: String
     Default: develop
+  DomainName:
+    Type: String
+    Default: labtest44.com
+  DomainCertificateArn:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /cert/com-labtest44
 
 Mappings:
   RegionMap:
@@ -31,9 +37,11 @@ Resources:
       Parameters:
         Environment: !Ref Environment
         BranchIdentifier: !Ref BranchIdentifier
+        DomainName: !Ref DomainName
+        DomainCertificateArn: !Ref DomainCertificateArn
       TemplateURL: ./main-stack.yaml
 
 Outputs:
   ApiUrl:
-    Description: "Widget Ratings Api"
+    Description: "Backend Stack Api"
     Value: !GetAtt MainStack.Outputs.ApiUrl

@@ -1,6 +1,6 @@
 import { Stack, App, StackProps } from '@aws-cdk/core';
 import { StringParameter } from '@aws-cdk/aws-ssm';
-import { CloudFrontS3StackBuilder } from 'aws-cdk-stack-builders/stack-builders/frontend/CloudFrontS3StackBuilder';
+import { CloudFrontS3StackBuilder } from 'aws-cdk-modules/stack-builders/frontend/CloudFrontS3StackBuilder';
 
 export class FrontEndStack extends Stack {
   constructor(parent: App, name: string, props: StackProps) {

@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "config": {
-    "s3BucketName": "us-east-1-artifacts-075134109942",
+    "s3BucketName": "artifacts-432267630742",
     "region": "us-east-1",
     "cloudFormationStackName": "BackendStack",
     "functionName": "CoreServiceFunction",
-    "accountId": "075134109942"
+    "accountId": "432267630742"
   },
   "scripts": {
     "package": "aws cloudformation package --template ./backend-dev.yaml --s3-bucket $npm_package_config_s3BucketName --output-template packaged-backend-dev-stack.yaml --region $npm_package_config_region",

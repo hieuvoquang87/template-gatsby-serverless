@@ -12,10 +12,8 @@ Parameters:
     Default: develop
   DomainName:
     Type: String
-    Default: hieuqvo.com
   DomainCertificateArn:
-    Type: AWS::SSM::Parameter::Value<String>
-    Default: /cert/com-hieuqvo
+    Type: String
 
 Mappings:
   RegionMap:

@@ -1,0 +1,23 @@
+{
+  "name": "gatsby-serverless",
+  "version": "1.0.0",
+  "description": "Template for building Full-Stack app with Gatsby + Serverless + Blue-Green Deployment",
+  "main": "index.js",
+  "scripts": {
+    "deploy:cicd": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://hieuvoquang87@github.com/hieuvoquang87/template-gatsby-serverless.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hieuvoquang87/template-gatsby-serverless/issues"
+  },
+  "homepage": "https://github.com/hieuvoquang87/template-gatsby-serverless#readme",
+  "dependencies": {
+    "aws-cdk": "^1.31.0",
+    "ts-node": "^8.8.1"
+  }
+}
