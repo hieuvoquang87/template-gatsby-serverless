@@ -12,9 +12,12 @@
   },
   "scripts": {
     "start": "node ./src/app.local.js",
+    "start:debug": "node --inspect-brk ./src/app.local.js",
     "config": "node ./scripts/configure.js",
     "deconfig": "node ./scripts/deconfigure.js",
     "local": "node scripts/local",
+    "invoke:local": "sam local invoke 'ExpressBackend' -e api-gateway-event.json",
+    "invoke:local-debug": "sam local invoke -d 5858 'ExpressBackend'",
     "invoke-lambda": "aws lambda invoke --function-name $npm_package_config_functionName --region $npm_package_config_region --payload file://api-gateway-event.json lambda-invoke-response.json && cat lambda-invoke-response.json",
     "create-bucket": "aws s3 mb s3://$npm_package_config_s3BucketName --region $npm_package_config_region",
     "delete-bucket": "aws s3 rb s3://$npm_package_config_s3BucketName --region $npm_package_config_region",
